@@ -15,9 +15,11 @@ object Solution extends App {
     alphabetLines(i) = scala.io.StdIn.readLine().grouped(h).toArray
   }
 
-  var alphabet: Array[Array[String]] = Array.ofDim(20, l)
+  val alphabetSize = alphabetLines(0).length
 
-  for (i <- 0 until 20) {
+  var alphabet: Array[Array[String]] = Array.ofDim(alphabetSize, l)
+
+  for (i <- 0 until alphabetSize) {
     val letter = Array.ofDim[String](l)
     for (j <- 0 until l) {
       letter(j) = alphabetLines(j)(i)
@@ -28,7 +30,7 @@ object Solution extends App {
   var alphabetMap = Map.empty[Int, Int]
   var alphabetMapReverse = Map.empty[Int, Array[String]]
 
-  for (i <- 0 until 20) {
+  for (i <- 0 until alphabetSize) {
     alphabetMap = alphabetMap + (hash(alphabet(i)) -> i)
     alphabetMapReverse = alphabetMapReverse + (i -> alphabet(i))
   }
@@ -40,40 +42,24 @@ object Solution extends App {
   }
 
   def decodeLetter(letter: Array[String]) : Double = {
-    val letterCarried = letter.grouped(4).toArray.reverse
+    val letterCarried = letter.grouped(h).toArray.reverse
     var result: Double = 0
     for (i <- 0 until letterCarried.length) {
-      result = result + (alphabetMap.get(hash(letterCarried(i))).getOrElse(0) * Math.pow(20, i))
+      result = result + (alphabetMap.get(hash(letterCarried(i))).getOrElse(0) * Math.pow(alphabetSize, i))
     }
-    println(result)
     result
   }
 
-  def encodeLetter(number: Int):Array[String] = {
-    //val result = (log10(number)/log10(20)).toInt
-
-    var powers: Array[Int] = Array.ofDim[Int](20)
-    var buffer = number.toDouble
-    breakable{
-      for (i <- 0 until 20){
-        while (buffer - Math.pow(20, i) >= 0) {
-          buffer = buffer - Math.pow(20, i)
-          powers(i) = powers(i) + 1
-          if (powers(i) == 20){
-            powers(i) = 0
-            powers(i + 1) = powers(i + 1) + 1
-          }
-        }
-        if (buffer <= 0) break;
+  def encodeLetter(number: Int): Unit = {
+    if (number < alphabetSize){
+      val result = alphabetMapReverse.get(number).getOrElse(Array.empty)
+      for (i <- 0 until result.length) {
+        println(result(i))
       }
+    } else {
+      encodeLetter(number / alphabetSize)
+      encodeLetter(number % alphabetSize)
     }
-    var result: Array[String] = Array.empty[String]
-    for (i <- 0 until powers.length) {
-      if (powers(i) > 0){
-        result = alphabetMapReverse.get(powers(i)).getOrElse(Array.empty) ++ result
-      }
-    }
-    result
   }
 
   val s1 = scala.io.StdIn.readInt()
@@ -92,7 +78,7 @@ object Solution extends App {
 
   val operation = scala.io.StdIn.readLine()
 
-  val result = encodeLetter(((operation) match {
+  encodeLetter(((operation) match {
     case "*" => decodeLetter(letter1) * decodeLetter(letter2)
     case "/" => decodeLetter(letter1) / decodeLetter(letter2)
     case "+" => decodeLetter(letter1) + decodeLetter(letter2)
@@ -102,7 +88,4 @@ object Solution extends App {
   // Write an action using println
   // To debug: Console.err.println("Debug messages...")
 
-  for (i <- 0 until result.length) {
-    println(result(i))
-  }
 }
