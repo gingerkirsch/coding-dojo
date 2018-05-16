@@ -28,11 +28,11 @@ object Solution extends App {
   }
 
   var alphabetMap = Map.empty[Int, Int]
-  var alphabetMapReverse = Map.empty[Int, Array[String]]
+  var alphabetMapReverse = Map.empty[Long, Array[String]]
 
   for (i <- 0 until alphabetSize) {
     alphabetMap = alphabetMap + (hash(alphabet(i)) -> i)
-    alphabetMapReverse = alphabetMapReverse + (i -> alphabet(i))
+    alphabetMapReverse = alphabetMapReverse + (i.toLong -> alphabet(i))
   }
 
   def hash(letter: Array[String]): Int = {
@@ -50,7 +50,7 @@ object Solution extends App {
     result
   }
 
-  def encodeLetter(number: Int): Unit = {
+  def encodeLetter(number: Long): Unit = {
     if (number < alphabetSize){
       val result = alphabetMapReverse.get(number).getOrElse(Array.empty)
       for (i <- 0 until result.length) {
@@ -83,7 +83,7 @@ object Solution extends App {
     case "/" => decodeLetter(letter1) / decodeLetter(letter2)
     case "+" => decodeLetter(letter1) + decodeLetter(letter2)
     case "-" => decodeLetter(letter1) - decodeLetter(letter2)
-  }).toInt)
+  }).toLong)
 
   // Write an action using println
   // To debug: Console.err.println("Debug messages...")
