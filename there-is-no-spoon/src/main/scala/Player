@@ -1,0 +1,36 @@
+import math._
+import scala.util._
+
+/**
+ * Don't let the machines win. You are humanity's last hope...
+ **/
+object Player extends App {
+  val width = readInt // the number of cells on the X axis
+  val height = readInt // the number of cells on the Y axis
+  var grid = Array.ofDim[String](width, height)
+  for(i <- 0 until height) {
+    grid(i) = readLine.grouped(1).toArray // width characters, each either 0 or .
+  }
+
+  var response = new StringBuilder()
+  def step(response: StringBuilder, i: Int, j: Int): StringBuilder = {
+    if (response.toString().length == 11) {
+      println(response.toString)
+      response.clear()
+    }
+    response.append(s"$i $j ")
+
+    //append right closest neighbour
+    if (i + 1 == width) response.append("-1 -1 ")
+    else if (grid(i + 1)(j) == "0") response.append(s"${i + 1} $j ")
+    else step(response, i + 1, j)
+
+    //append bottom closest neighbour
+    if (j + 1 == height) response.append("-1 -1 ")
+    else if (grid(0)(j + 1) == "0") response.append(s"$i ${j + 1}")
+    else step(response, i, j + 1)
+
+  }
+  println(step(response, 0, 0).toString())
+
+}
